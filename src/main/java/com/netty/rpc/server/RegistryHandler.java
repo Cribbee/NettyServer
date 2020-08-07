@@ -1,4 +1,4 @@
-package com.netty.rpc.registry;
+package com.netty.rpc.server;
 
 import com.netty.rpc.protocol.InvokerProtocol;
 import io.netty.channel.ChannelHandlerContext;
@@ -70,7 +70,7 @@ public class RegistryHandler extends ChannelInboundHandlerAdapter {
             System.out.println("result: " + result);
             // 将反射执行后的结果写回给client
             ctx.writeAndFlush(result);
-            ctx.flush();
+            //ctx.flush();
             ctx.close();
         }
     }

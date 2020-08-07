@@ -1,4 +1,4 @@
-package com.netty.rpc.provider;
+package com.netty.rpc.RpcServiceImpl;
 
 import com.netty.rpc.api.IRpcHelloService;
 

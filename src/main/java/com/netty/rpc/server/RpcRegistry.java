@@ -1,13 +1,12 @@
-package com.netty.rpc.registry;
+package com.netty.rpc.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoop;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.serialization.ClassResolver;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
@@ -20,16 +19,19 @@ public class RpcRegistry {
         this.port = port;
     }
     public void start(){
-        EventLoopGroup bossGroup = new NioEventLoop();
-        EventLoopGroup workGroup = new NioEventLoop();
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        //EventLoop b = new NioEventLoop();
+        EventLoopGroup workGroup = new NioEventLoopGroup();
         ChannelFuture future = null;
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {// 注意这是childHandler, client用的是handler, 都要重写initChannel方法
+                    // 注意这是childHandler, client用的是handler, 都要重写initChannel方法
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel sc)throws Exception{ // 这里是写了一个ChannelInitializer 类的匿名子类，实现了initChannel 方法，当有连接过来时，才会调用这个函数
+                    // 这里是写了一个ChannelInitializer 类的匿名子类，实现了initChannel 方法，当有连接过来时，才会调用这个函数
+                    protected void initChannel(SocketChannel sc)throws Exception{
                         System.out.println("sc:" + sc);
                         ChannelPipeline cp = sc.pipeline();
                         System.out.println("111111");
@@ -48,7 +50,8 @@ public class RpcRegistry {
                         System.out.println("6666666");
                     }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 128)// 来不及处理的连接放在缓存中的数目最大数
+                    // 来不及处理的连接放在缓存中的数目最大数
+                    .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);//保持连接
             future = b.bind(port).sync();
             System.out.println("GP registry start listen on port:" + port);

@@ -1,6 +1,8 @@
-package com.netty.rpc.consumer;
+package com.netty.rpc.client;
 
 import com.netty.rpc.api.IRpcHelloService;
+import com.netty.rpc.api.IRpcService;
+import com.netty.rpc.client.proxy.RpcProxy;
 
 public class RpcConsumer {
     public static void main(String[] args) {
@@ -10,7 +12,11 @@ public class RpcConsumer {
         // 还有就是在本地只有接口，不能实例化，那我们就只能给他创建一个代理对象
         // 根据动态代理的原理，我们先要创建一个代理类，实现InvocationHandler, 并重写invoke方法
         // 在invoke方法里，把我们自定义的协议对象发给server, 然后再读取server的返回，然后再把这个返回值返回给本地调用的方法
-        IRpcHelloService rpcHello =
+        IRpcHelloService rpcHello = RpcProxy.createProxy(IRpcHelloService.class);
+        System.out.println("out:" + rpcHello.hello("lxy"));
 
+        IRpcService service = RpcProxy.createProxy(IRpcService.class);
+        int r = service.add(1,1);
+        System.out.println("result 1 + 1 =" + r);
     }
 }
